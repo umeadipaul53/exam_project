@@ -3,7 +3,7 @@ const app = express();
 const dotenv = require("dotenv");
 dotenv.config();
 
-const port = process.env.PORT;
+const port = process.env.PORT || 2206;
 
 const studentRouter = require("./router/student_router");
 const adminRouter = require("./router/admin_router");
