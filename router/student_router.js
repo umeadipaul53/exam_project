@@ -8,6 +8,7 @@ const updateStudentProfile = require("../controller/studentController/editStuden
 const logout = require("../controller/studentController/logout");
 const profilePage = require("../controller/studentController/studentProfile");
 const refreshToken = require("../controller/studentController/refreshStudentToken");
+const fetchQuestions = require("../controller/questionController/fetchQuestionController");
 
 //Student Account Access routes
 router.route("/student_registration").post(registerStudent);
@@ -21,6 +22,9 @@ router.route("/logout").post(authenticateToken, authorizeRoles("user"), logout);
 router
   .route("/student-profile/:id")
   .get(authenticateToken, authorizeRoles("user"), profilePage);
+router
+  .route("/take_exam")
+  .get(authenticateToken, authorizeRoles("user"), fetchQuestions);
 router
   .route("/update_student_information/:id")
   .patch(authenticateToken, authorizeRoles("user"), updateStudentProfile);

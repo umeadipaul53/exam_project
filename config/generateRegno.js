@@ -1,4 +1,4 @@
-const { studentModel, countModel } = require("../model/student_account.model");
+const { countModel } = require("../model/student_account.model");
 
 const generateRegno = async ({ schoolCode }) => {
   const year = new Date().getFullYear();

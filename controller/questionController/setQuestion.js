@@ -2,7 +2,7 @@ const sanitize = require("mongo-sanitize");
 const {
   questionModel,
   questionValidationSchema,
-} = require("../../model/exam_question.model");
+} = require("../../model/set_exam_question.model");
 
 const setQuestions = async (req, res) => {
   try {
