@@ -10,6 +10,7 @@ const userinputValidationSchema = Joi.object({
       "any.required": "Registration number is required",
     }),
   subject: Joi.string().required(),
+  page: Joi.number().integer().min(1).default(1),
 });
 
 module.exports = {

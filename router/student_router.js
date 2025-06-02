@@ -9,6 +9,9 @@ const logout = require("../controller/studentController/logout");
 const profilePage = require("../controller/studentController/studentProfile");
 const refreshToken = require("../controller/studentController/refreshStudentToken");
 const fetchQuestions = require("../controller/questionController/fetchQuestionController");
+const startExam = require("../controller/examController/startExam");
+const submitAnswer = require("../controller/examController/submitAnswer");
+const finishExam = require("../controller/examController/finishExam");
 
 //Student Account Access routes
 router.route("/student_registration").post(registerStudent);
@@ -23,11 +26,20 @@ router
   .route("/student-profile/:id")
   .get(authenticateToken, authorizeRoles("user"), profilePage);
 router
+  .route("/update_student_information/:id")
+  .patch(authenticateToken, authorizeRoles("user"), updateStudentProfile);
+router
   .route("/take_exam")
   .get(authenticateToken, authorizeRoles("user"), fetchQuestions);
 router
-  .route("/update_student_information/:id")
-  .patch(authenticateToken, authorizeRoles("user"), updateStudentProfile);
+  .route("/start-exam")
+  .post(authenticateToken, authorizeRoles("user"), startExam);
+router
+  .route("/submit-answer")
+  .patch(authenticateToken, authorizeRoles("user"), submitAnswer);
+router
+  .route("/finish-exam")
+  .patch(authenticateToken, authorizeRoles("user"), finishExam);
 // admin routes
 
 module.exports = router;

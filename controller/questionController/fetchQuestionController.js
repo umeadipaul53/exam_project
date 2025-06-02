@@ -1,7 +1,6 @@
 const sanitize = require("mongo-sanitize");
 const { questionModel } = require("../../model/set_exam_question.model");
 const { studentModel } = require("../../model/student_account.model");
-const { answerQuestionModel } = require("../../model/answerQuestion.model");
 const {
   userinputValidationSchema,
 } = require("../../model/fetch_question_model");
@@ -11,6 +10,7 @@ const fetchQuestions = async (req, res) => {
     const sanitizedData = {
       regno: sanitize(req.query.regno),
       subject: sanitize(req.query.subject),
+      page: parseInt(sanitize(req.query.page)) || 1,
     };
 
     // validate student search input
@@ -27,22 +27,20 @@ const fetchQuestions = async (req, res) => {
 
     const studentClass = student.class;
 
-    //verify if the student has taken the exam before
-    const studentTakenExam = await answerQuestionModel.findOne({
-      regno: value.regno,
+    const pageValue = value.page;
+    const limit = 1; // One question per page
+    const skip = (pageValue - 1) * limit;
+    const filter = {
       subject: value.subject,
       class: studentClass,
-    });
+    };
 
-    if (studentTakenExam)
-      return res
-        .status(403)
-        .json({ message: "you have taken this subject exam already" });
-
-    const questions = await questionModel.find({
-      class: studentClass,
-      subject: value.subject,
-    });
+    const questions = await questionModel
+      .find(filter)
+      .select("-correctAnswer")
+      .sort({ createdAt: 1 }) // ascending order or use -1 for descending order
+      .skip(skip)
+      .limit(limit);
 
     if (!questions)
       return res.status(400).json({
@@ -50,9 +48,17 @@ const fetchQuestions = async (req, res) => {
           "there is no available questions for this subject at the moment",
       });
 
+    const totalQuestions = await questionModel.countDocuments(filter);
+
     res.status(200).json({
       message: "Below are the questions you are to answer",
-      data: questions,
+      data: {
+        questionId: questions._id,
+        currentPage: pageValue,
+        totalPages: Math.ceil(totalQuestions / limit),
+        totalQuestions,
+        question: questions[0] || null,
+      },
     });
   } catch (error) {
     res.status(500).json({ message: "failed to fetch questions", data: error });
