@@ -38,7 +38,7 @@ const resendToken = async (req, res) => {
       hash: hashed,
     });
 
-    const verifyUrl = `http://localhost:2206/student/verify?token=${token}`;
+    const verifyUrl = `https://exam-project-asw4.onrender.com/student/verify?token=${token}`;
     // Send email
     await sendEmail({
       to: value.email,
