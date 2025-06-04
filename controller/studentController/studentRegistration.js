@@ -1,10 +1,14 @@
 const sanitize = require("mongo-sanitize");
 const bcrypt = require("bcrypt");
+const crypto = require("crypto");
 const {
   studentModel,
   studentValidationSchema,
+  verifyTokenModel,
 } = require("../../model/student_account.model");
 const generateRegno = require("../../config/generateRegno");
+const { sendEmail } = require("../../email/emailServices");
+const { generateAccessToken } = require("../../middleware/tokens");
 
 const registerStudent = async (req, res) => {
   try {
@@ -57,8 +61,30 @@ const registerStudent = async (req, res) => {
       regno: regNum,
     });
 
+    const name = value.fullname;
+    const token = generateAccessToken(newStudent);
+
+    // Hash the token generated
+    const hashed = crypto.createHash("sha256").update(token).digest("hex");
+    await verifyTokenModel.create({
+      tokenId: newStudent.id,
+      hash: hashed,
+    });
+
+    const verifyUrl = `http://localhost:2206/student/verify?token=${token}`;
+
+    await sendEmail({
+      to: value.email,
+      subject: "welcome to our CBT Application",
+      templateName: "welcome",
+      variables: {
+        name,
+        verifyUrl,
+      },
+    });
+
     res.status(201).json({
-      message: "registered student successfully",
+      message: "Student registered. Check your email.",
       data: {
         id: newStudent.id,
         username: newStudent.username,
@@ -69,6 +95,8 @@ const registerStudent = async (req, res) => {
         class: newStudent.class,
         schoolCode: newStudent.schoolCode,
         regno: newStudent.regno,
+        link: verifyUrl,
+        token: token,
       },
     });
   } catch (error) {

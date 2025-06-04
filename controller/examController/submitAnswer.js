@@ -37,6 +37,7 @@ const submitAnswer = async (req, res) => {
 
     const qd = value.questionId;
 
+    // finding the index of the questions being answered
     const existingIndex = session.answers.findIndex(
       (ans) => ans.questionId === qd
     );

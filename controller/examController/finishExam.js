@@ -31,7 +31,7 @@ const finishExam = async (req, res) => {
     session.maxScore = max;
 
     await session.save();
-    res.json({ success: true, score: totalScore });
+    res.json({ success: true, score: totalScore, MaxScore: max });
   } catch (error) {
     res.status(500).json({ message: "could not finish exam" });
   }

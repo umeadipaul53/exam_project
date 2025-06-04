@@ -6,33 +6,16 @@ const {
   loginValidationSchema,
   tokenModel,
 } = require("../../model/student_account.model");
-
-// Create JWTs
-// generate access token
-function generateAccessToken(user) {
-  return jwt.sign(
-    { id: user.id, username: user.username, role: user.role },
-    process.env.JWT_SECRET,
-    {
-      expiresIn: "15m",
-    }
-  );
-}
-
-//generate refresh access token
-function generateRefreshToken(user) {
-  return jwt.sign(
-    { id: user.id, username: user.username, role: user.role },
-    process.env.JWT_REFRESH_SECRET,
-    { expiresIn: "7d" }
-  );
-}
+const {
+  generateAccessToken,
+  generateRefreshToken,
+} = require("../../middleware/tokens");
 
 const loginStudent = async (req, res) => {
   try {
     //sanitize data
     const sanitizedData = {
-      username: sanitize(req.body.username),
+      email: sanitize(req.body.email),
       password: sanitize(req.body.password),
     };
 
@@ -43,17 +26,21 @@ const loginStudent = async (req, res) => {
     }
 
     const account = await studentModel.findOne({
-      username: value.username,
+      email: value.email,
     });
 
     if (!account) {
-      return res.status(401).json({ message: "Username does not exist" });
+      return res.status(401).json({ message: "Email does not exist" });
     }
 
     const isMatch = await bcrypt.compare(value.password, account.password);
 
     if (!isMatch) {
-      return res.status(401).json({ message: "Invalid Username and password" });
+      return res.status(401).json({ message: "Invalid Email and password" });
+    }
+
+    if (account.verified === false) {
+      return res.status(401).json({ message: "Please verify your account" });
     }
 
     const accesstoken = generateAccessToken(account);
@@ -65,7 +52,7 @@ const loginStudent = async (req, res) => {
     });
 
     res.status(200).json({
-      message: `welcome ${value.username}`,
+      message: `welcome ${account.fullname}`,
       student: {
         id: account.id,
         username: account.username,

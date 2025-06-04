@@ -12,10 +12,14 @@ const fetchQuestions = require("../controller/questionController/fetchQuestionCo
 const startExam = require("../controller/examController/startExam");
 const submitAnswer = require("../controller/examController/submitAnswer");
 const finishExam = require("../controller/examController/finishExam");
+const verifyStudentAccount = require("../controller/studentController/verifyStudentAccount");
+const resendToken = require("../controller/studentController/resendVerification");
 
 //Student Account Access routes
 router.route("/student_registration").post(registerStudent);
 router.route("/login").post(loginStudent);
+router.route("/verify").put(verifyStudentAccount);
+router.route("/resend-verication-token").post(resendToken);
 
 //student account routes
 router
@@ -40,6 +44,5 @@ router
 router
   .route("/finish-exam")
   .patch(authenticateToken, authorizeRoles("user"), finishExam);
-// admin routes
 
 module.exports = router;

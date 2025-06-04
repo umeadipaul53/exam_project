@@ -15,6 +15,7 @@ const studentSchema = new mongoose.Schema({
   class: { type: String, required: true },
   schoolCode: { type: String, required: true }, // still required, but injected
   regno: { type: String, unique: true, required: true }, // e.g., 2025/SC001/001
+  verified: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now },
 });
 
@@ -105,13 +106,38 @@ const studentUpdateValidationSchema = Joi.object({
 });
 
 const loginValidationSchema = Joi.object({
-  username: Joi.string().alphanum().min(3).max(30).required(),
+  email: Joi.string().email().required(),
   password: Joi.string().min(6).required(),
+});
+
+const resendTokenValidationSchema = Joi.object({
+  email: Joi.string().email().required(),
 });
 
 const countModel = mongoose.model("counter", counterSchema);
 
 const tokenModel = mongoose.model("token", tokenSchema);
+const verifytokenSchema = new mongoose.Schema({
+  tokenId: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    ref: "student_account",
+  },
+  hash: { type: String, required: true },
+  createdAt: { type: Date, default: Date.now, expires: "7d" }, // expires after 7 days
+});
+
+const verifyTokenModel = mongoose.model("verifytoken", verifytokenSchema);
+
+const tokenValidationSchema = Joi.object({
+  token: Joi.string()
+    .pattern(/^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+$/)
+    .required()
+    .messages({
+      "string.pattern.base": "Token must be a valid JWT",
+      "string.empty": "Token is required",
+    }),
+});
 
 module.exports = {
   studentModel,
@@ -120,4 +146,7 @@ module.exports = {
   countModel,
   studentUpdateValidationSchema,
   loginValidationSchema,
+  tokenValidationSchema,
+  resendTokenValidationSchema,
+  verifyTokenModel,
 };

@@ -1,16 +1,6 @@
 const jwt = require("jsonwebtoken");
 const { tokenModel } = require("../../model/student_account.model");
-
-// generate access token
-function generateAccessToken(user) {
-  return jwt.sign(
-    { id: user.id, username: user.username, role: user.role },
-    process.env.JWT_SECRET,
-    {
-      expiresIn: "15m",
-    }
-  );
-}
+const { generateAccessToken } = require("../../middleware/tokens");
 
 const refreshToken = async (req, res) => {
   const { refreshToken } = req.body;
