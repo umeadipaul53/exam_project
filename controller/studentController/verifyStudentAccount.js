@@ -10,8 +10,9 @@ const { generateAccessToken } = require("../../middleware/tokens");
 
 const verifyStudentAccount = async (req, res) => {
   try {
+    const rawToken = req.method === "GET" ? req.query.token : req.body.token;
     const sanitizedData = {
-      token: sanitize(req.query.token),
+      token: sanitize(rawToken),
     };
 
     const { error, value } = tokenValidationSchema.validate(sanitizedData);

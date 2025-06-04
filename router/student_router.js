@@ -18,7 +18,8 @@ const resendToken = require("../controller/studentController/resendVerification"
 //Student Account Access routes
 router.route("/student_registration").post(registerStudent);
 router.route("/login").post(loginStudent);
-router.route("/verify").put(verifyStudentAccount);
+//this is done beause its a link that is clicked although only get works too
+router.route("/verify").get(verifyStudentAccount).put(verifyStudentAccount);
 router.route("/resend-verication-token").post(resendToken);
 
 //student account routes
