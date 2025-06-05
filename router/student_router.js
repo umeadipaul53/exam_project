@@ -14,6 +14,11 @@ const submitAnswer = require("../controller/examController/submitAnswer");
 const finishExam = require("../controller/examController/finishExam");
 const verifyStudentAccount = require("../controller/studentController/verifyStudentAccount");
 const resendToken = require("../controller/studentController/resendVerification");
+const forgotPass = require("../controller/studentController/forgotPassword");
+const {
+  changePassPage,
+  handlechangePass,
+} = require("../controller/studentController/changePassword");
 
 //Student Account Access routes
 router.route("/student_registration").post(registerStudent);
@@ -21,6 +26,9 @@ router.route("/login").post(loginStudent);
 //this is done beause its a link that is clicked although only get works too
 router.route("/verify").get(verifyStudentAccount).put(verifyStudentAccount);
 router.route("/resend-verication-token").post(resendToken);
+router.route("/forgot_password").post(forgotPass);
+router.route("/change_password").get(changePassPage);
+router.route("/change_password").put(handlechangePass);
 
 //student account routes
 router

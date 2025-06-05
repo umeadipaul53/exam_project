@@ -1,7 +1,6 @@
 const fs = require("fs");
 const path = require("path");
 const nodemailer = require("nodemailer");
-const rawMjml = require("mjml");
 const handlebars = require("handlebars");
 const mjmlModule = require("mjml");
 

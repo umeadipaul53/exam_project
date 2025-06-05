@@ -139,6 +139,34 @@ const tokenValidationSchema = Joi.object({
     }),
 });
 
+const changePasswordValidationSchema = Joi.object({
+  token: Joi.string()
+    .pattern(/^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+$/)
+    .required()
+    .messages({
+      "string.pattern.base": "Token must be a valid JWT",
+      "string.empty": "Token is required",
+    }),
+
+  newPass: Joi.string()
+    .min(6)
+    .pattern(
+      /^(?=.*[A-Z])(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).+$/
+    )
+    .required()
+    .messages({
+      "string.pattern.base":
+        "Password must contain at least one uppercase letter, one symbol, letters, and numbers",
+      "string.empty": "New password is required",
+      "string.min": "New password must be at least 6 characters long",
+    }),
+
+  confirmPass: Joi.string().valid(Joi.ref("newPass")).required().messages({
+    "any.only": "Confirm password must match new password",
+    "string.empty": "Confirm password is required",
+  }),
+});
+
 module.exports = {
   studentModel,
   studentValidationSchema,
@@ -149,4 +177,5 @@ module.exports = {
   tokenValidationSchema,
   resendTokenValidationSchema,
   verifyTokenModel,
+  changePasswordValidationSchema,
 };

@@ -31,7 +31,18 @@ const verifyStudentAccount = async (req, res) => {
     }
 
     //verify the token with jwt
-    const decodedUser = jwt.verify(mainToken, process.env.JWT_SECRET);
+    let decodedUser;
+    try {
+      decodedUser = jwt.verify(mainToken, process.env.JWT_SECRET);
+    } catch (error) {
+      if (error.name === "TokenExpiredError") {
+        return res.status(403).json({ message: "Token expired" });
+      }
+      if (error.name === "JsonWebTokenError") {
+        return res.status(403).json({ message: "Invalid token" });
+      }
+      throw error; // re-throw for general catch
+    }
     // you can also use this from the middleware
     // const decodedUser = req.user; // The token is valid and req.user is available
     // update the field verifed once the token has been verified
@@ -52,12 +63,6 @@ const verifyStudentAccount = async (req, res) => {
       hashed: hashed,
     });
   } catch (error) {
-    if (error.name === "TokenExpiredError") {
-      return res.status(403).json({ message: "Token expired" });
-    }
-    if (error.name === "JsonWebTokenError") {
-      return res.status(403).json({ message: "Invalid token" });
-    }
     res.status(500).json({ message: "could not verify student", data: error });
   }
 };
