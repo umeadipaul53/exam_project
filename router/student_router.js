@@ -19,6 +19,7 @@ const {
   changePassPage,
   handlechangePass,
 } = require("../controller/studentController/changePassword");
+const { Student } = require("../controller/studentController/student");
 
 //Student Account Access routes
 router.route("/student_registration").post(registerStudent);
@@ -31,6 +32,7 @@ router.route("/change_password").get(changePassPage);
 router.route("/change_password").put(handlechangePass);
 
 //student account routes
+router.route("/user").post(authenticateToken, authorizeRoles("user"), Student);
 router
   .route("/refresh-token")
   .post(authenticateToken, authorizeRoles("user"), refreshToken);
