@@ -51,6 +51,12 @@ const loginStudent = async (req, res) => {
       token: refreshToken,
     });
 
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: false, // Set to true in production (HTTPS)
+      sameSite: "strict",
+    });
+
     res.status(200).json({
       message: `welcome ${account.fullname}`,
       student: {
