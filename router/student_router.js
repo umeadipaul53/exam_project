@@ -33,10 +33,8 @@ router.route("/change_password").put(handlechangePass);
 
 //student account routes
 router.route("/user").get(authenticateToken, authorizeRoles("user"), Student);
-router
-  .route("/refresh-token")
-  .post(authenticateToken, authorizeRoles("user"), refreshToken);
-router.route("/logout").post(authenticateToken, authorizeRoles("user"), logout);
+router.route("/refresh-token").post(refreshToken);
+router.route("/logout").post(logout);
 router
   .route("/student-profile/:id")
   .get(authenticateToken, authorizeRoles("user"), profilePage);

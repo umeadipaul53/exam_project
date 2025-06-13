@@ -5,7 +5,6 @@ const { generateAccessToken } = require("../../middleware/tokens");
 const refreshToken = async (req, res) => {
   // const { refreshToken } = req.body;
   const refreshToken = req.cookies.refreshToken;
-
   if (!refreshToken)
     return res.status(400).json({ message: "No refresh token" });
 
