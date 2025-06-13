@@ -53,9 +53,9 @@ const loginStudent = async (req, res) => {
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      // secure: true, // ⬅️ Required for SameSite=None
-      // sameSite: "None", // ⬅️ Required for cross-site cookie
-      sameSite: "Lax",
+      secure: true, // required for SameSite=None
+      sameSite: "None", // allow cross-site
+      path: "/student/refresh-token",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
