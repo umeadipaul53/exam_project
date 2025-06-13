@@ -53,8 +53,9 @@ const loginStudent = async (req, res) => {
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: true,
-      sameSite: "None",
+      // secure: true, // ⬅️ Required for SameSite=None
+      // sameSite: "None", // ⬅️ Required for cross-site cookie
+      sameSite: "Lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 

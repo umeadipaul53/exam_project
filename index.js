@@ -6,10 +6,6 @@ const cookieParser = require("cookie-parser");
 dotenv.config();
 
 const port = process.env.PORT || 2206;
-
-const studentRouter = require("./router/student_router");
-const adminRouter = require("./router/admin_router");
-
 app.use(express.json());
 app.use(cookieParser());
 app.use(
@@ -18,6 +14,9 @@ app.use(
     credentials: true,
   })
 );
+
+const studentRouter = require("./router/student_router");
+const adminRouter = require("./router/admin_router");
 
 app.get("/", (req, res) => {
   res.status(200).json({ message: "server up and running" });
