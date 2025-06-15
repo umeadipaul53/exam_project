@@ -25,7 +25,9 @@ const studentRouter = require("./router/student_router");
 const adminRouter = require("./router/admin_router");
 
 app.get("/", (req, res) => {
-  res.status(200).json({ message: "server up and running" });
+  res
+    .status(200)
+    .json({ message: "server up and running", data: isProduction });
 });
 
 app.use("/student", studentRouter);
