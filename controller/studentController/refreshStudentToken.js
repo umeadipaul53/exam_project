@@ -3,20 +3,26 @@ const { tokenModel } = require("../../model/student_account.model");
 const { generateAccessToken } = require("../../middleware/tokens");
 
 const refreshToken = async (req, res) => {
-  // const { refreshToken } = req.body;
   const refreshToken = req.cookies.refreshToken;
   if (!refreshToken)
     return res.status(400).json({ message: "No refresh token" });
 
   const savedToken = await tokenModel.findOne({ token: refreshToken });
-  if (!savedToken) return res.status(400).json({ message: "token not found" });
+  if (!savedToken) return res.status(400).json({ message: "Token not found" });
 
-  jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET, (err, user) => {
-    if (err) return res.status(403).json({ message: "Invalid Token" });
+  let decoded;
+  try {
+    decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+  } catch (err) {
+    return res.status(403).json({ message: "Invalid Token" });
+  }
 
-    const accesstoken = generateAccessToken({ id: user.id });
-    res.json({ accesstoken });
+  const accessToken = generateAccessToken({
+    id: decoded.id,
+    role: decoded.role,
   });
+
+  res.json({ accessToken });
 };
 
 module.exports = refreshToken;

@@ -8,10 +8,16 @@ dotenv.config();
 const port = process.env.PORT || 2206;
 app.use(express.json());
 app.use(cookieParser());
+
+const isProduction = process.env.NODE_ENV === "production";
+const frontendURL = isProduction
+  ? "https://exam-project-asw4.onrender.com"
+  : "http://localhost:5173";
+
 app.use(
   cors({
-    origin: "http://localhost:5173", // or your frontend domain
-    credentials: true,
+    origin: frontendURL,
+    credentials: true, // must match with Axios `withCredentials: true`
   })
 );
 

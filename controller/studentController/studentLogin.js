@@ -10,6 +10,7 @@ const {
   generateAccessToken,
   generateRefreshToken,
 } = require("../../middleware/tokens");
+const isProduction = process.env.NODE_ENV === "production";
 
 const loginStudent = async (req, res) => {
   try {
@@ -53,10 +54,10 @@ const loginStudent = async (req, res) => {
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: true, // required for SameSite=None
-      sameSite: "None", // allow cross-site
+      secure: isProduction, // true in production (HTTPS only)
+      sameSite: isProduction ? "None" : "Lax", // "None" for cross-site, "Lax" for local dev
       path: "/student/refresh-token",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
     res.status(200).json({

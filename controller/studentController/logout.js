@@ -1,4 +1,5 @@
 const { tokenModel } = require("../../model/student_account.model");
+const isProduction = process.env.NODE_ENV === "production";
 
 const logout = async (req, res) => {
   const refreshToken = req.cookies.refreshToken;
@@ -6,15 +7,16 @@ const logout = async (req, res) => {
     return res.status(400).json({ message: "No refresh token" });
   console.log("COOKIES:", req.cookies);
 
+  await tokenModel.deleteOne({ token: refreshToken });
+
   res.clearCookie("refreshToken", {
     httpOnly: true,
-    secure: true,
-    sameSite: "None",
-    path: "/student/refresh-token", // match the original path
+    secure: isProduction, // true in production (HTTPS only)
+    sameSite: isProduction ? "None" : "Lax", // "None" for cross-site, "Lax" for local dev
+    path: "/student/refresh-token",
   });
 
-  await tokenModel.deleteOne({ token: refreshToken });
-  res.json({ message: "logged out" });
+  res.json({ message: "logged out successfully" });
 };
 
 module.exports = logout;

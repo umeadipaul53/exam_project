@@ -1,14 +1,20 @@
 const { studentModel } = require("../../model/student_account.model");
 
 const Student = async (req, res) => {
-  const student = studentModel.find((u) => u.id === req.user.id);
+  const user = await studentModel
+    .findById(req.user.id)
+    .select("id email fullname role");
+
+  if (!user) {
+    return res.status(404).json({ message: "Student not found" });
+  }
+
   res.json({
-    id: student.id,
-    email: student.email,
-    fullname: student.fullname,
-    role: student.role,
+    id: user.id,
+    email: user.email,
+    fullname: user.fullname,
+    role: user.role,
   });
-  res.json({ user: req.user });
 };
 
 module.exports = Student;

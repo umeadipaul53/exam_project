@@ -6,6 +6,7 @@ function authorizeRoles(...allowedRoles) {
         .json({ message: "Access denied. Role not allowed." });
     }
     next();
+    console.log("User Role:", req.user.role);
   };
 }
 
