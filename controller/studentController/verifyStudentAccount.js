@@ -56,7 +56,8 @@ const verifyStudentAccount = async (req, res) => {
     const accesstoken = generateAccessToken(account);
 
     res.status(201).json({
-      message: "your account has been verififed, you can log in",
+      message:
+        "your account has been verififed, you can now login with your login details",
       newtoken: accesstoken,
       token: value.token,
       hash: record.hash,

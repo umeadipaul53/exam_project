@@ -25,6 +25,7 @@ const questionSchema = new mongoose.Schema({
   marks: { type: Number, default: 1, required: true },
   class: { type: String, required: true },
   subject: { type: String, required: true },
+  year: { type: Number, default: new Date().getFullYear(), immutable: true },
   createdAt: {
     type: Date,
     default: Date.now,
@@ -76,6 +77,11 @@ const questionValidationSchema = Joi.object({
   subject: Joi.string().min(5).required().messages({
     "string.empty": "Subject is required",
     "string.min": "Subject must be at least 5 characters long",
+  }),
+  duration: Joi.number().integer().min(1).required().messages({
+    "number.base": "Duration must be a number",
+    "number.min": "Duration must be at least 1 minute",
+    "any.required": "Duration is required",
   }),
 });
 

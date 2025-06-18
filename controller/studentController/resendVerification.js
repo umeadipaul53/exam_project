@@ -38,7 +38,7 @@ const resendToken = async (req, res) => {
       hash: hashed,
     });
 
-    const verifyUrl = `https://exam-project-asw4.onrender.com/student/verify?token=${token}`;
+    const verifyUrl = `https://exam-project-frontend.vercel.app/verify-student-account?token=${token}`;
     // Send email
     await sendEmail({
       to: value.email,

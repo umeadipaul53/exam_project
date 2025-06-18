@@ -14,6 +14,7 @@ const ExamSessionSchema = new mongoose.Schema({
       expectedMark: Number,
     },
   ],
+  year: { type: Number, default: new Date().getFullYear(), immutable: true },
   totalScore: { type: Number },
   maxScore: { type: Number },
   startedAt: { type: Date, default: Date.now },
@@ -21,6 +22,31 @@ const ExamSessionSchema = new mongoose.Schema({
 });
 
 const ExamSessionModel = mongoose.model("result", ExamSessionSchema);
+
+const fetchExamSchema = new mongoose.Schema({
+  year: { type: Number, default: new Date().getFullYear(), immutable: true },
+  class: { type: String, required: true, trim: true },
+  subject: { type: String, required: true },
+  duration: { type: Number, required: true, min: 1, max: 180 },
+  title: {
+    type: String,
+    default: function () {
+      // Only run if subject is set
+      if (this.subject) {
+        return this.subject.slice(0, 3).toUpperCase() + " Exam";
+      }
+      return "Exam"; // fallback
+    },
+    immutable: true, // Optional: Prevent title from being updated manually
+  },
+});
+
+const fetchExamModel = mongoose.model("examtable", fetchExamSchema);
+
+const fetchExamValidationSchema = Joi.object({
+  class: Joi.string().trim().min(1).required(),
+  subject: Joi.string().trim().min(1).required(),
+});
 
 const submitAnswerSchema = Joi.object({
   sessionId: Joi.string()
@@ -86,4 +112,6 @@ module.exports = {
   submitAnswerSchema,
   ExamSessionModelValidationSchema,
   finishExamValidationSchema,
+  fetchExamModel,
+  fetchExamValidationSchema,
 };

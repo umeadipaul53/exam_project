@@ -71,7 +71,7 @@ const registerStudent = async (req, res) => {
       hash: hashed,
     });
 
-    const verifyUrl = `https://exam-project-asw4.onrender.com/student/verify?token=${token}`;
+    const verifyUrl = `https://exam-project-frontend.vercel.app/verify-student-account?token=${token}`;
 
     await sendEmail({
       to: value.email,
@@ -84,7 +84,7 @@ const registerStudent = async (req, res) => {
     });
 
     res.status(201).json({
-      message: "Student registered. Check your email.",
+      message: "Student registered. Check your email to verify your account.",
       data: {
         id: newStudent.id,
         username: newStudent.username,

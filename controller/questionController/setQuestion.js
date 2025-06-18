@@ -3,6 +3,7 @@ const {
   questionModel,
   questionValidationSchema,
 } = require("../../model/set_exam_question.model");
+const { fetchExamModel } = require("../../model/ExamSessionSchema.model");
 
 const setQuestions = async (req, res) => {
   try {
@@ -16,12 +17,29 @@ const setQuestions = async (req, res) => {
       marks: Number(req.body.marks),
       class: sanitize(req.body.class),
       subject: sanitize(req.body.subject),
+      duration: sanitize(req.body.duration),
     };
 
     // Validate sanitized input
     const { error, value } = questionValidationSchema.validate(sanitizedData);
     if (error) {
       return res.status(400).json({ message: error.details[0].message });
+    }
+
+    const currentYear = new Date().getFullYear();
+    const createExam = await fetchExamModel.findOne({
+      class: value.class,
+      subject: value.subject,
+      year: currentYear,
+    });
+
+    if (!createExam) {
+      await fetchExamModel.create({
+        class: value.class,
+        subject: value.subject,
+        duration: value.duration,
+      });
+      console.log("Created new exam:");
     }
 
     // Save the question to the database

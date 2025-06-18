@@ -20,6 +20,7 @@ const {
   handlechangePass,
 } = require("../controller/studentController/changePassword");
 const Student = require("../controller/studentController/student");
+const fetchExam = require("../controller/questionController/fetchExam");
 
 //Student Account Access routes
 router.route("/student_registration").post(registerStudent);
@@ -34,6 +35,7 @@ router.route("/change_password").put(handlechangePass);
 //student account routes
 router.route("/user").get(authenticateToken, authorizeRoles("user"), Student);
 router.route("/refresh-token").post(refreshToken);
+router.route("/fetch-exam").get(authenticateToken, fetchExam);
 router.route("/logout").post(logout);
 router
   .route("/student-profile/:id")
