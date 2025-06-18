@@ -25,7 +25,18 @@ const studentModel = mongoose.model("student_account", studentSchema);
 const studentValidationSchema = Joi.object({
   username: Joi.string().alphanum().min(3).max(30).required(),
   email: Joi.string().email().required(),
-  password: Joi.string().min(6).required(),
+  password: Joi.string()
+    .min(6)
+    .pattern(
+      /^(?=.*[A-Z])(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).+$/
+    )
+    .required()
+    .messages({
+      "string.pattern.base":
+        "Password must contain at least one uppercase letter, one symbol, letters, and numbers",
+      "string.empty": "New password is required",
+      "string.min": "New password must be at least 6 characters long",
+    }),
   fullname: Joi.string()
     .pattern(/^[a-zA-Z ]+$/)
     .required()
@@ -107,7 +118,18 @@ const studentUpdateValidationSchema = Joi.object({
 
 const loginValidationSchema = Joi.object({
   email: Joi.string().email().required(),
-  password: Joi.string().min(6).required(),
+  password: Joi.string()
+    .min(6)
+    .pattern(
+      /^(?=.*[A-Z])(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).+$/
+    )
+    .required()
+    .messages({
+      "string.pattern.base":
+        "Password must contain at least one uppercase letter, one symbol, letters, and numbers",
+      "string.empty": "New password is required",
+      "string.min": "New password must be at least 6 characters long",
+    }),
 });
 
 const resendTokenValidationSchema = Joi.object({
