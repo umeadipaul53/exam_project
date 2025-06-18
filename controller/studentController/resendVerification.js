@@ -39,8 +39,9 @@ const resendToken = async (req, res) => {
     });
 
     const verifyUrl = `https://exam-project-frontend.vercel.app/verify-student-account?token=${token}`;
+
     // Send email
-    await sendEmail({
+    const sentMail = await sendEmail({
       to: value.email,
       subject: "Verify your email",
       templateName: "welcome",
@@ -49,6 +50,12 @@ const resendToken = async (req, res) => {
         verifyUrl,
       },
     });
+
+    if (!sentMail) {
+      res.status(500).json({
+        message: "failed to send mail",
+      });
+    }
 
     res
       .status(201)

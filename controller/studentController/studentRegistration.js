@@ -73,7 +73,7 @@ const registerStudent = async (req, res) => {
 
     const verifyUrl = `https://exam-project-frontend.vercel.app/verify-student-account?token=${token}`;
 
-    await sendEmail({
+    const sentMail = await sendEmail({
       to: value.email,
       subject: "welcome to our CBT Application",
       templateName: "welcome",
@@ -82,6 +82,12 @@ const registerStudent = async (req, res) => {
         verifyUrl,
       },
     });
+
+    if (!sentMail) {
+      res.status(500).json({
+        message: "failed to send mail",
+      });
+    }
 
     res.status(201).json({
       message: "Student registered. Check your email to verify your account.",
