@@ -83,13 +83,15 @@ const registerStudent = async (req, res) => {
       },
     });
 
+    console.log("Email sent?", sentMail);
+
     if (!sentMail) {
-      res.status(500).json({
-        message: "failed to send mail",
+      return res.status(500).json({
+        message: "Failed to send verification email",
       });
     }
 
-    res.status(201).json({
+    return res.status(201).json({
       message: "Student registered. Check your email to verify your account.",
       data: {
         id: newStudent.id,

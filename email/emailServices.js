@@ -27,7 +27,6 @@ async function sendEmail({ to, subject, templateName, variables }) {
     );
 
     const mjmlRaw = fs.readFileSync(templatePath, "utf-8");
-
     const compiledTemplate = handlebars.compile(mjmlRaw);
     const mjmlCompiled = compiledTemplate(variables);
 
@@ -49,9 +48,11 @@ async function sendEmail({ to, subject, templateName, variables }) {
     };
 
     await transporter.sendMail(mailOptions);
+
+    return true; // ✅ Add this line to return success
   } catch (error) {
     console.error("Failed to send email:", error.message);
-    throw error;
+    return false; // ✅ Add this to indicate failure
   }
 }
 
