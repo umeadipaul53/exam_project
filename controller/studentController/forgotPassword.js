@@ -33,7 +33,7 @@ const forgotPass = async (req, res) => {
     });
 
     const name = student.username;
-    const verifyUrl = `https://exam-project-asw4.onrender.com/student/change_password?token=${token}`;
+    const verifyUrl = `https://exam-project-frontend.vercel.app/change_password?token=${token}`;
 
     await sendEmail({
       to: value.email,
@@ -46,7 +46,7 @@ const forgotPass = async (req, res) => {
     });
 
     res.status(201).json({
-      message: "Student registered. Check your email.",
+      message: "A reset link has been sent to your email.",
       data: {
         email: student.email,
         link: verifyUrl,
