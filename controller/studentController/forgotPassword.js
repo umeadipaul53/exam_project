@@ -35,7 +35,7 @@ const forgotPass = async (req, res) => {
     const name = student.username;
     const verifyUrl = `https://exam-project-frontend.vercel.app/change_password?token=${token}`;
 
-    await sendEmail({
+    const sentMail = await sendEmail({
       to: value.email,
       subject: "Forgot password",
       templateName: "forgotpassword",
@@ -45,7 +45,15 @@ const forgotPass = async (req, res) => {
       },
     });
 
-    res.status(201).json({
+    console.log("Email sent?", sentMail);
+
+    if (!sentMail) {
+      return res.status(500).json({
+        message: "Failed to send forgot password email",
+      });
+    }
+
+    return res.status(201).json({
       message: "A reset link has been sent to your email.",
       data: {
         email: student.email,
