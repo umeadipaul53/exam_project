@@ -43,7 +43,14 @@ const setQuestions = async (req, res) => {
     }
 
     // Save the question to the database
-    const saved = await questionModel.create(value);
+    const saved = await questionModel.create({
+      question: value.question,
+      options: value.options,
+      correctAnswer: value.correctAnswer,
+      marks: value.marks,
+      class: value.class,
+      subject: value.subject,
+    });
 
     res.status(201).json({
       message: "Question created",

@@ -48,7 +48,7 @@ const loginStudent = async (req, res) => {
     const refreshToken = generateRefreshToken(account);
 
     await tokenModel.create({
-      tokenId: account.id,
+      tokenId: account._id,
       token: refreshToken,
     });
 
@@ -63,7 +63,7 @@ const loginStudent = async (req, res) => {
     res.status(200).json({
       message: `welcome ${account.fullname}`,
       student: {
-        id: account.id,
+        id: account._id,
         username: account.username,
         email: account.email,
       },

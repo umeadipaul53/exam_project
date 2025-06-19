@@ -30,7 +30,6 @@ const questionSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-  duration: { type: Number, required: true, min: 1, max: 180 },
 });
 
 const questionModel = mongoose.model("question", questionSchema);

@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 function generateAccessToken(user) {
   return jwt.sign(
     {
-      id: user.id,
+      id: user._id,
       email: user.email,
       fullname: user.fullname,
       class: user.class,
@@ -19,7 +19,7 @@ function generateAccessToken(user) {
 function generateRefreshToken(user) {
   return jwt.sign(
     {
-      id: user.id,
+      id: user._id,
       email: user.email,
       fullname: user.fullname,
       class: user.class,

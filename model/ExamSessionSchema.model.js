@@ -45,7 +45,6 @@ const fetchExamModel = mongoose.model("examtable", fetchExamSchema);
 
 const fetchExamValidationSchema = Joi.object({
   class: Joi.string().trim().min(1).required(),
-  subject: Joi.string().trim().min(1).required(),
 });
 
 const submitAnswerSchema = Joi.object({
