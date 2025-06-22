@@ -20,7 +20,8 @@ const {
   handlechangePass,
 } = require("../controller/studentController/changePassword");
 const Student = require("../controller/studentController/student");
-const fetchExam = require("../controller/questionController/fetchExam");
+const fetchExam = require("../controller/examController/fetchExam");
+const fetchAllResults = require("../controller/resultController/fetchAllResult");
 
 //Student Account Access routes
 router.route("/student_registration").post(registerStudent);
@@ -35,8 +36,7 @@ router.route("/change_password").put(handlechangePass);
 //student account routes
 router.route("/user").get(authenticateToken, authorizeRoles("user"), Student);
 router.route("/refresh-token").post(refreshToken);
-router.route("/fetch-exam").get(authenticateToken, fetchExam);
-router.route("/logout").post(logout);
+
 router
   .route("/student-profile/:id")
   .get(authenticateToken, authorizeRoles("user"), profilePage);
@@ -44,16 +44,23 @@ router
   .route("/update_student_information/:id")
   .patch(authenticateToken, authorizeRoles("user"), updateStudentProfile);
 router
-  .route("/take_exam")
-  .get(authenticateToken, authorizeRoles("user"), fetchQuestions);
+  .route("/fetch-exam")
+  .get(authenticateToken, authorizeRoles("user"), fetchExam);
 router
   .route("/start-exam")
   .post(authenticateToken, authorizeRoles("user"), startExam);
+router
+  .route("/fetch_questions")
+  .get(authenticateToken, authorizeRoles("user"), fetchQuestions);
 router
   .route("/submit-answer")
   .patch(authenticateToken, authorizeRoles("user"), submitAnswer);
 router
   .route("/finish-exam")
   .patch(authenticateToken, authorizeRoles("user"), finishExam);
+router
+  .route("/fetch-result")
+  .get(authenticateToken, authorizeRoles("user"), fetchAllResults);
+router.route("/logout").post(logout);
 
 module.exports = router;

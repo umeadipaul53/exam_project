@@ -20,6 +20,7 @@ const verifyStudentAccount = async (req, res) => {
       return res.status(401).json({ message: error.details[0].message });
 
     const mainToken = value.token;
+
     //hash the token
     const hashed = crypto.createHash("sha256").update(mainToken).digest("hex");
 

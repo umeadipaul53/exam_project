@@ -16,10 +16,16 @@ const ExamSessionSchema = new mongoose.Schema({
   ],
   year: { type: Number, default: new Date().getFullYear(), immutable: true },
   totalScore: { type: Number },
+  examId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "examtable", // reference to your exam table
+  },
   maxScore: { type: Number },
   startedAt: { type: Date, default: Date.now },
   submittedAt: { type: Date },
 });
+
+ExamSessionSchema.index({ regno: 1, subject: 1, class: 1 }, { unique: true });
 
 const ExamSessionModel = mongoose.model("result", ExamSessionSchema);
 

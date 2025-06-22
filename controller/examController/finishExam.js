@@ -2,6 +2,7 @@ const sanitize = require("mongo-sanitize");
 const {
   ExamSessionModel,
   finishExamValidationSchema,
+  fetchExamModel,
 } = require("../../model/ExamSessionSchema.model");
 
 const finishExam = async (req, res) => {
@@ -16,6 +17,7 @@ const finishExam = async (req, res) => {
       return res.status(403).json({ message: error.details[0].message });
 
     const session = await ExamSessionModel.findById(value.sessionId);
+
     const totalScore = session.answers.reduce(
       (sum, ans) => sum + (ans.marksAwarded || 0),
       0
@@ -26,9 +28,20 @@ const finishExam = async (req, res) => {
       0
     );
 
+    const subj = session.subject;
+    const year = session.year;
+    const examClass = session.class;
+
+    const getExamId = await fetchExamModel.findOne({
+      year,
+      class: examClass,
+      subject: subj,
+    });
+
     session.submittedAt = new Date();
     session.totalScore = totalScore;
     session.maxScore = max;
+    session.examId = getExamId._id;
 
     await session.save();
     res.json({ success: true, score: totalScore, MaxScore: max });

@@ -44,19 +44,29 @@ const loginStudent = async (req, res) => {
       return res.status(401).json({ message: "Please verify your account" });
     }
 
-    const accesstoken = generateAccessToken(account);
-    const refreshToken = generateRefreshToken(account);
+    //generate a token id for the user
+    const newtokenId = crypto.randomUUID();
 
-    await tokenModel.create({
-      tokenId: account._id,
-      token: refreshToken,
-    });
+    //generate access token and refreshToken
+    const accesstoken = generateAccessToken(account);
+    const refreshToken = generateRefreshToken(account, newtokenId);
+
+    try {
+      await tokenModel.create({
+        tokenId: newtokenId,
+        token: refreshToken,
+        userId: account._id,
+      });
+    } catch (error) {
+      console.error("Error saving refresh token:", error);
+      throw new Error("Internal server error");
+    }
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: isProduction, // true in production (HTTPS only)
       sameSite: isProduction ? "None" : "Lax", // "None" for cross-site, "Lax" for local dev
-      path: "/student/refresh-token",
+      path: "/student",
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
@@ -66,6 +76,7 @@ const loginStudent = async (req, res) => {
         id: account._id,
         username: account.username,
         email: account.email,
+        regno: account.regno,
       },
       accesstoken,
       refreshToken,

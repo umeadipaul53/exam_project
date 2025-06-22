@@ -7,9 +7,9 @@ const {
 const startExam = async (req, res) => {
   try {
     const sanitizedData = {
-      regno: sanitize(req.body.regno),
-      subject: sanitize(req.body.subject),
-      class: sanitize(req.body.class),
+      regno: sanitize(req.query.regno),
+      subject: sanitize(req.query.subject),
+      class: sanitize(req.query.class),
     };
 
     const { error, value } =
@@ -30,13 +30,27 @@ const startExam = async (req, res) => {
         .status(403)
         .json({ message: "you have taken this subject exam already" });
 
-    const newExam = await ExamSessionModel.create({
-      regno: value.regno,
-      subject: value.subject,
-      class: value.class,
-    });
+    try {
+      const newExam = await ExamSessionModel.create({
+        regno: value.regno,
+        subject: value.subject,
+        class: value.class,
+      });
 
-    res.status(201).json({ sessionId: newExam._id });
+      res.status(201).json({ sessionId: newExam._id });
+    } catch (error) {
+      if (error.code === 11000) {
+        // Already exists, find and return it
+        const existingSession = await ExamSessionModel.findOne({
+          regno: value.regno,
+          subject: value.subject,
+          class: value.class,
+        });
+        return res.status(200).json({ sessionId: existingSession._id });
+      }
+
+      res.status(500).json({ message: "Something went wrong", error: error });
+    }
   } catch (error) {
     res
       .status(500)

@@ -1,32 +1,35 @@
 const jwt = require("jsonwebtoken");
 
-function generateAccessToken(user) {
+function generateAccessToken(user, expiresIn = "5m") {
   return jwt.sign(
     {
-      id: user._id,
+      id: user._id.toString(),
       email: user.email,
       fullname: user.fullname,
       class: user.class,
+      regno: user.regno,
       role: user.role,
     },
     process.env.JWT_SECRET,
     {
-      expiresIn: "1h",
+      algorithm: "HS256",
+      expiresIn,
     }
   );
 }
 
-function generateRefreshToken(user) {
+function generateRefreshToken(user, tokenId, expiresIn = "7d") {
   return jwt.sign(
     {
-      id: user._id,
-      email: user.email,
-      fullname: user.fullname,
-      class: user.class,
+      id: user._id.toString(),
       role: user.role,
+      tokenId,
     },
     process.env.JWT_REFRESH_SECRET,
-    { expiresIn: "7d" }
+    {
+      algorithm: "HS256",
+      expiresIn,
+    }
   );
 }
 

@@ -72,18 +72,51 @@ const studentValidationSchema = Joi.object({
 
 const tokenSchema = new mongoose.Schema({
   tokenId: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: String,
     required: true,
-    ref: "student_account",
+    unique: true,
   },
-  token: { type: String, required: true },
-  createdAt: { type: Date, default: Date.now, expires: "7d" }, // expires after 7 days
+  token: {
+    type: String,
+    required: true,
+  },
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "student_account", // reference to your student table
+    required: true,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+    expires: "7d", // auto-delete after 7 days
+  },
+});
+
+const tokenModel = mongoose.model("token", tokenSchema);
+
+const tokenModelValidationSchema = Joi.object({
+  tokenId: Joi.string().required(),
+  token: Joi.string().required(),
+  userId: Joi.string()
+    .custom((value, helpers) => {
+      if (!mongoose.Types.ObjectId.isValid(value)) {
+        return helpers.error("any.invalid");
+      }
+      return value;
+    }, "ObjectId Validation")
+    .required(),
+});
+
+const tokenValidationSchema = Joi.object({
+  token: Joi.string().required(),
 });
 
 const counterSchema = new mongoose.Schema({
   key: { type: String, required: true, unique: true }, // e.g., "2025/CES"
   seq: { type: Number, default: 0 },
 });
+
+const countModel = mongoose.model("counter", counterSchema);
 
 const studentUpdateValidationSchema = Joi.object({
   fullname: Joi.string()
@@ -136,9 +169,6 @@ const resendTokenValidationSchema = Joi.object({
   email: Joi.string().email().required(),
 });
 
-const countModel = mongoose.model("counter", counterSchema);
-
-const tokenModel = mongoose.model("token", tokenSchema);
 const verifytokenSchema = new mongoose.Schema({
   tokenId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -150,16 +180,6 @@ const verifytokenSchema = new mongoose.Schema({
 });
 
 const verifyTokenModel = mongoose.model("verifytoken", verifytokenSchema);
-
-const tokenValidationSchema = Joi.object({
-  token: Joi.string()
-    .pattern(/^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+$/)
-    .required()
-    .messages({
-      "string.pattern.base": "Token must be a valid JWT",
-      "string.empty": "Token is required",
-    }),
-});
 
 const changePasswordValidationSchema = Joi.object({
   token: Joi.string()
