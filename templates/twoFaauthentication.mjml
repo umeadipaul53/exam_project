@@ -1,0 +1,68 @@
+<mjml>
+  <mj-head>
+    <mj-attributes>
+      <mj-text font-family="Helvetica, Arial, sans-serif" />
+    </mj-attributes>
+  </mj-head>
+
+  <mj-body background-color="#f4f4f4">
+    <mj-wrapper padding="24px">
+      <mj-section background-color="#ffffff" border-radius="8px">
+        <mj-column>
+          <mj-text font-size="20px" color="#333333" font-weight="bold">
+            Dear {{name}},
+          </mj-text>
+
+          <mj-text font-size="16px" color="#555555">
+            Your secure login to <strong>CBT Application</strong> requires a
+            one-time password (OTP). Use the code below within the next 5
+            minutes to access your account:
+          </mj-text>
+
+          <!-- OTP Card with styled container -->
+          <mj-raw>
+            <div
+              style="
+                background-color: #f0f0f0;
+                border-radius: 6px;
+                padding: 16px;
+                text-align: center;
+              "
+            >
+              <p
+                style="
+                  font-size: 24px;
+                  font-weight: bold;
+                  color: #000000;
+                  margin: 0;
+                "
+              >
+                {{twoFactorCode}}
+              </p>
+            </div>
+          </mj-raw>
+
+          <mj-spacer height="16px" />
+
+          <mj-text font-size="12px" color="#999999">
+            <strong>Didn't request this?</strong><br />
+            Our support team is here for you. Contact us at
+            <a
+              href="mailto:info@softcodemicrosystem.com"
+              style="color: #007bff"
+            >
+              info@softcodemicrosystem.com
+            </a>
+          </mj-text>
+
+          <mj-spacer height="8px" />
+
+          <mj-text font-size="12px" color="#999999">
+            <strong>Best regards,</strong><br />
+            Softcode Microsystem CBT Team
+          </mj-text>
+        </mj-column>
+      </mj-section>
+    </mj-wrapper>
+  </mj-body>
+</mjml>

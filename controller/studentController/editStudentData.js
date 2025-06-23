@@ -18,6 +18,10 @@ const updateStudentProfile = async (req, res) => {
       return res.status(401).json({ message: err.details[0].message });
     }
 
+    if (!req.params.id) {
+      return res.status(400).json({ message: "Missing student ID in request" });
+    }
+
     const updateInfo = await studentModel.findByIdAndUpdate(
       req.params.id,
       {

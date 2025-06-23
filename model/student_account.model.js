@@ -15,6 +15,7 @@ const studentSchema = new mongoose.Schema({
   class: { type: String, required: true },
   schoolCode: { type: String, required: true }, // still required, but injected
   regno: { type: String, unique: true, required: true }, // e.g., 2025/SC001/001
+  twofactor: { type: Boolean, default: true, required: true },
   verified: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now },
 });

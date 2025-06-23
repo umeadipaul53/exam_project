@@ -22,6 +22,12 @@ const {
 const Student = require("../controller/studentController/student");
 const fetchExam = require("../controller/examController/fetchExam");
 const fetchAllResults = require("../controller/resultController/fetchAllResult");
+const verifyTwoFA = require("../controller/studentController/verifyTwoFactor");
+const resendOTP = require("../controller/studentController/resendOTP");
+const {
+  disAble2FA,
+  enAble2FA,
+} = require("../controller/studentController/twofactor");
 
 //Student Account Access routes
 router.route("/student_registration").post(registerStudent);
@@ -32,13 +38,20 @@ router.route("/resend-verication-token").post(resendToken);
 router.route("/forgot_password").post(forgotPass);
 router.route("/change_password").get(changePassPage);
 router.route("/change_password").put(handlechangePass);
+router.route("/verify-two-factor-authentication").post(verifyTwoFA);
+router.route("/resend-otp").post(resendOTP);
 
 //student account routes
 router.route("/user").get(authenticateToken, authorizeRoles("user"), Student);
 router.route("/refresh-token").post(refreshToken);
-
 router
-  .route("/student-profile/:id")
+  .route("/enable-two-factor")
+  .patch(authenticateToken, authorizeRoles("user"), enAble2FA);
+router
+  .route("/disable-two-factor")
+  .patch(authenticateToken, authorizeRoles("user"), disAble2FA);
+router
+  .route("/student-profile")
   .get(authenticateToken, authorizeRoles("user"), profilePage);
 router
   .route("/update_student_information/:id")

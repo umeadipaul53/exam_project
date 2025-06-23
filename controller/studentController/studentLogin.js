@@ -1,6 +1,5 @@
 const sanitize = require("mongo-sanitize");
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
 const {
   studentModel,
   loginValidationSchema,
@@ -11,6 +10,8 @@ const {
   generateRefreshToken,
 } = require("../../middleware/tokens");
 const isProduction = process.env.NODE_ENV === "production";
+const { twoFactorModel } = require("../../model/twoFactor-model");
+const { sendEmail } = require("../../email/emailServices");
 
 const loginStudent = async (req, res) => {
   try {
@@ -44,43 +45,98 @@ const loginStudent = async (req, res) => {
       return res.status(401).json({ message: "Please verify your account" });
     }
 
-    //generate a token id for the user
-    const newtokenId = crypto.randomUUID();
+    const twoFactorCode = String(Math.floor(Math.random() * 1000000)).padStart(
+      6,
+      "0"
+    );
 
-    //generate access token and refreshToken
-    const accesstoken = generateAccessToken(account);
-    const refreshToken = generateRefreshToken(account, newtokenId);
+    if (account.twofactor === false) {
+      //generate a token id for the user
+      const newtokenId = crypto.randomUUID();
 
-    try {
-      await tokenModel.create({
-        tokenId: newtokenId,
-        token: refreshToken,
-        userId: account._id,
+      //generate access token and refreshToken
+      const accesstoken = generateAccessToken(account);
+      const refreshToken = generateRefreshToken(account, newtokenId);
+
+      try {
+        await tokenModel.create({
+          tokenId: newtokenId,
+          token: refreshToken,
+          userId: account._id,
+        });
+      } catch (error) {
+        console.error("Error saving refresh token:", error);
+        throw new Error("Internal server error");
+      }
+
+      res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: isProduction, // true in production (HTTPS only)
+        sameSite: isProduction ? "None" : "Lax", // "None" for cross-site, "Lax" for local dev
+        path: "/student",
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       });
-    } catch (error) {
-      console.error("Error saving refresh token:", error);
-      throw new Error("Internal server error");
+
+      res.status(200).json({
+        message: `welcome ${account.fullname}`,
+        student: {
+          id: account._id,
+          username: account.username,
+          email: account.email,
+          regno: account.regno,
+        },
+        accesstoken,
+        refreshToken,
+        twofactor: false,
+      });
+    } else {
+      await twoFactorModel.deleteMany({ userId: account._id });
+
+      try {
+        const createFA = await twoFactorModel.create({
+          userId: account._id,
+          code: twoFactorCode,
+          expiresAt: new Date(Date.now() + 5 * 60 * 1000),
+        });
+      } catch (error) {
+        console.error("Error creating 2FA entry:", error);
+        return res.status(500).json({
+          message: "Could not create 2FA entry",
+          error: error.message,
+        });
+      }
+
+      const name = account.username;
+
+      const sentMail = await sendEmail({
+        to: value.email,
+        subject: "2FA authentication CBT Application",
+        templateName: "twoFaauthentication",
+        variables: {
+          name,
+          twoFactorCode,
+        },
+      });
+
+      console.log("Email sent?", sentMail);
+
+      if (!sentMail) {
+        return res.status(500).json({
+          message: "Failed to send 2FA email",
+        });
+      }
+
+      return res.status(200).json({
+        message: "2FA Code generated successfully",
+        student: {
+          id: account._id,
+          username: account.username,
+          email: account.email,
+          regno: account.regno,
+        },
+        twofactor: true,
+      });
     }
-
-    res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: isProduction, // true in production (HTTPS only)
-      sameSite: isProduction ? "None" : "Lax", // "None" for cross-site, "Lax" for local dev
-      path: "/student",
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-    });
-
-    res.status(200).json({
-      message: `welcome ${account.fullname}`,
-      student: {
-        id: account._id,
-        username: account.username,
-        email: account.email,
-        regno: account.regno,
-      },
-      accesstoken,
-      refreshToken,
-    });
   } catch (error) {
     res.status(401).json({
       message: "failed to login this student",
