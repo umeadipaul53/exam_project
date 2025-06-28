@@ -50,7 +50,7 @@ const fetchExamSchema = new mongoose.Schema({
 const fetchExamModel = mongoose.model("examtable", fetchExamSchema);
 
 const fetchExamValidationSchema = Joi.object({
-  class: Joi.string().trim().min(1).required(),
+  userId: Joi.string().length(24).hex().required(),
 });
 
 const submitAnswerSchema = Joi.object({
@@ -110,6 +110,12 @@ const ExamSessionModelValidationSchema = Joi.object({
       "string.pattern.base": `"class" may only contain letters, numbers, spaces, or hyphens`,
       "any.required": `"class" is a required field`,
     }),
+  year: Joi.number()
+    .integer()
+    .min(1900)
+    .max(new Date().getFullYear() + 1) // optionally allow next year
+    .required()
+    .label("Year"),
 });
 
 module.exports = {

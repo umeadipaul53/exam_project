@@ -9,9 +9,9 @@ const {
 
 // Create JWTs
 // generate access token
-function generateAccessToken(user) {
+function generateAccessToken(admin) {
   return jwt.sign(
-    { id: user.id, email: user.email, role: user.role },
+    { id: admin.id, email: admin.email, role: admin.role },
     process.env.JWT_SECRET,
     {
       expiresIn: "15m",
@@ -20,9 +20,9 @@ function generateAccessToken(user) {
 }
 
 //generate refresh access token
-function generateRefreshToken(user) {
+function generateRefreshToken(admin) {
   return jwt.sign(
-    { id: user.id, email: user.email, role: user.role },
+    { id: admin.id, email: admin.email, role: admin.role },
     process.env.JWT_REFRESH_SECRET,
     { expiresIn: "7d" }
   );
@@ -56,12 +56,14 @@ const loginAdmin = async (req, res) => {
       return res.status(401).json({ message: "Invalid Email and password" });
     }
 
+    const newTokenId = crypto.randomUUID();
     const accesstoken = generateAccessToken(account);
     const refreshToken = generateRefreshToken(account);
 
     await tokenModel.create({
-      tokenId: account.id,
+      tokenId: newTokenId,
       token: refreshToken,
+      userId: account._id,
     });
 
     res.status(200).json({
@@ -71,7 +73,6 @@ const loginAdmin = async (req, res) => {
         email: account.email,
       },
       accesstoken,
-      refreshToken,
     });
   } catch (error) {
     res.status(401).json({

@@ -4,6 +4,7 @@ const {
   finishExamValidationSchema,
   fetchExamModel,
 } = require("../../model/ExamSessionSchema.model");
+const { questionModel } = require("../../model/set_exam_question.model");
 
 const finishExam = async (req, res) => {
   try {
@@ -18,13 +19,11 @@ const finishExam = async (req, res) => {
 
     const session = await ExamSessionModel.findById(value.sessionId);
 
+    if (!session)
+      return res.status(404).json({ message: "Cant fetch exam at the moment" });
+
     const totalScore = session.answers.reduce(
       (sum, ans) => sum + (ans.marksAwarded || 0),
-      0
-    );
-
-    const max = session.answers.reduce(
-      (sum, ans) => sum + (ans.expectedMark || 0),
       0
     );
 
@@ -38,14 +37,17 @@ const finishExam = async (req, res) => {
       subject: subj,
     });
 
+    if (!getExamId)
+      return res.status(404).json({ message: "could not get matching examID" });
+
     session.submittedAt = new Date();
     session.totalScore = totalScore;
-    session.maxScore = max;
     session.examId = getExamId._id;
 
     await session.save();
-    res.json({ success: true, score: totalScore, MaxScore: max });
+    res.json({ success: true, score: totalScore });
   } catch (error) {
+    console.error("Error in finishExam:", error);
     res.status(500).json({ message: "could not finish exam" });
   }
 };

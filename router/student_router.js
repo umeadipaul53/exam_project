@@ -12,6 +12,7 @@ const fetchQuestions = require("../controller/questionController/fetchQuestionCo
 const startExam = require("../controller/examController/startExam");
 const submitAnswer = require("../controller/examController/submitAnswer");
 const finishExam = require("../controller/examController/finishExam");
+const checkResultPrinting = require("../controller/resultController/checkResultPrinting");
 const verifyStudentAccount = require("../controller/studentController/verifyStudentAccount");
 const resendToken = require("../controller/studentController/resendVerification");
 const forgotPass = require("../controller/studentController/forgotPassword");
@@ -74,6 +75,9 @@ router
 router
   .route("/fetch-result")
   .get(authenticateToken, authorizeRoles("user"), fetchAllResults);
+router
+  .route("/check-result-printing-status")
+  .get(authenticateToken, authorizeRoles("user"), checkResultPrinting);
 router.route("/logout").post(logout);
 
 module.exports = router;

@@ -1,27 +1,34 @@
 const sanitize = require("mongo-sanitize");
-const regnoSchema = require("../../model/result_model");
+const {
+  regnoSchema,
+  fetchResultValidationSchema,
+} = require("../../model/result_model");
 const { ExamSessionModel } = require("../../model/ExamSessionSchema.model");
+const { studentModel } = require("../../model/student_account.model");
 
 const fetchAllResults = async (req, res) => {
   try {
-    if (!req.user || !req.user.regno) {
+    if (!req.user || !req.user.id) {
       return res
         .status(401)
         .json({ message: "Unauthorized: Missing user data" });
     }
 
     const sanitizedData = {
-      regno: sanitize(req.user.regno),
+      userId: sanitize(req.user.id),
     };
 
-    const { error, value } = regnoSchema.validate(sanitize(req.user.regno));
+    const { error, value } =
+      fetchResultValidationSchema.validate(sanitizedData);
 
     if (error)
       return res.status(405).json({ message: error.details[0].message });
 
-    const allResults = await ExamSessionModel.find({ regno: value }).populate(
-      "examId"
-    );
+    const fullUser = await studentModel.findById(value.userId);
+
+    const allResults = await ExamSessionModel.find({
+      regno: fullUser.regno,
+    }).populate("examId");
 
     if (!allResults || allResults.length === 0)
       return res.status(403).json({

@@ -5,10 +5,6 @@ function generateAccessToken(user, expiresIn = "5m") {
     {
       id: user._id.toString(),
       email: user.email,
-      fullname: user.fullname,
-      class: user.class,
-      regno: user.regno,
-      twofactor: user.twofactor,
       role: user.role,
     },
     process.env.JWT_SECRET,

@@ -86,7 +86,6 @@ const loginStudent = async (req, res) => {
           regno: account.regno,
         },
         accesstoken,
-        refreshToken,
         twofactor: false,
       });
     } else {

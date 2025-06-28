@@ -85,4 +85,12 @@ const questionValidationSchema = Joi.object({
   }),
 });
 
-module.exports = { questionModel, questionValidationSchema };
+const deleteQuestionValidationSchema = Joi.object({
+  questionId: Joi.string().length(24).hex().required(),
+});
+
+module.exports = {
+  questionModel,
+  questionValidationSchema,
+  deleteQuestionValidationSchema,
+};

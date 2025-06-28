@@ -3,21 +3,24 @@ const {
   fetchExamModel,
   fetchExamValidationSchema,
 } = require("../../model/ExamSessionSchema.model");
+const { studentModel } = require("../../model/student_account.model");
 
 const fetchExam = async (req, res) => {
   try {
     const currentYear = new Date().getFullYear();
     // Assume req.user.class comes from authentication middleware
     const sanitizedData = {
-      class: sanitize(req.user.class),
+      userId: sanitize(req.user.id),
     };
 
     const { error, value } = fetchExamValidationSchema.validate(sanitizedData);
     if (error)
       return res.status(403).json({ message: error.details[0].message });
 
+    const fullUser = await studentModel.findById(value.userId);
+
     const filter = {
-      class: value.class,
+      class: fullUser.class,
       year: currentYear,
     };
     const selectedExams = await fetchExamModel.find(filter);

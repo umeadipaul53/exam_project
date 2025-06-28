@@ -10,6 +10,8 @@ const loginAdmin = require("../controller/adminController/adminLogin");
 const adminprofilePage = require("../controller/adminController/adminProfile");
 const updateAdminProfile = require("../controller/adminController/editAdminData");
 const logout = require("../controller/studentController/logout");
+const DeleteOneQuestion = require("../controller/questionController/deleteOneQuestion");
+const DeleteAllQuestions = require("../controller/questionController/deleteManyQuestions");
 
 //admin account access routes
 admin.route("/sign_up").post(registerAdmin);
@@ -28,6 +30,12 @@ admin
 admin
   .route("/setquestion")
   .post(authenticateToken, authorizeRoles("admin"), setQuestions);
+admin
+  .route("/delete-one-question")
+  .post(authenticateToken, authorizeRoles("admin"), DeleteOneQuestion);
+admin
+  .route("/delete-all-questions")
+  .post(authenticateToken, authorizeRoles("admin"), DeleteAllQuestions);
 admin
   .route("/allstudents")
   .get(authenticateToken, authorizeRoles("admin"), allStudents);

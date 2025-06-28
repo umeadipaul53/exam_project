@@ -10,4 +10,8 @@ const regnoSchema = Joi.string()
     "string.empty": "Regno is required",
   });
 
-module.exports = regnoSchema;
+const fetchResultValidationSchema = Joi.object({
+  userId: Joi.string().length(24).hex().required(),
+});
+
+module.exports = { regnoSchema, fetchResultValidationSchema };

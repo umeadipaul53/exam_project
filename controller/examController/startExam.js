@@ -1,4 +1,5 @@
 const sanitize = require("mongo-sanitize");
+const { questionModel } = require("../../model/set_exam_question.model");
 const {
   ExamSessionModel,
   ExamSessionModelValidationSchema,
@@ -10,6 +11,7 @@ const startExam = async (req, res) => {
       regno: sanitize(req.query.regno),
       subject: sanitize(req.query.subject),
       class: sanitize(req.query.class),
+      year: sanitize(req.query.year),
     };
 
     const { error, value } =
@@ -23,6 +25,7 @@ const startExam = async (req, res) => {
       regno: value.regno,
       subject: value.subject,
       class: value.class,
+      year: value.year,
     });
 
     if (studentTakenExam)
@@ -30,11 +33,23 @@ const startExam = async (req, res) => {
         .status(403)
         .json({ message: "you have taken this subject exam already" });
 
+    const currentYear = new Date().getFullYear();
+
+    const filter = {
+      subject: value.subject,
+      class: value.class,
+      year: value.year,
+    };
+
+    const numberQuestions = await questionModel.find(filter);
+    const max = numberQuestions.reduce((sum, ans) => sum + (ans.marks || 0), 0);
+
     try {
       const newExam = await ExamSessionModel.create({
         regno: value.regno,
         subject: value.subject,
         class: value.class,
+        maxScore: max,
       });
 
       res.status(201).json({ sessionId: newExam._id });
@@ -45,6 +60,7 @@ const startExam = async (req, res) => {
           regno: value.regno,
           subject: value.subject,
           class: value.class,
+          year: value.year,
         });
         return res.status(200).json({ sessionId: existingSession._id });
       }

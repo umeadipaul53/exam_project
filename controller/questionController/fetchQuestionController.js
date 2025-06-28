@@ -54,7 +54,6 @@ const fetchQuestions = async (req, res) => {
     res.status(200).json({
       message: "Below are the questions you are to answer",
       data: {
-        questionId: questions._id,
         totalQuestions,
         questions: questions,
       },
