@@ -8,10 +8,10 @@ const {
 const startExam = async (req, res) => {
   try {
     const sanitizedData = {
-      regno: sanitize(req.query.regno),
-      subject: sanitize(req.query.subject),
-      class: sanitize(req.query.class),
-      year: sanitize(req.query.year),
+      regno: sanitize(req.body.regno),
+      subject: sanitize(req.body.subject),
+      class: sanitize(req.body.class),
+      year: sanitize(req.body.year),
     };
 
     const { error, value } =
@@ -49,6 +49,7 @@ const startExam = async (req, res) => {
         regno: value.regno,
         subject: value.subject,
         class: value.class,
+        year: value.year,
         maxScore: max,
       });
 
