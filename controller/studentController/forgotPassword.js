@@ -63,7 +63,7 @@ const forgotPass = async (req, res) => {
     });
   } catch (error) {
     res
-      .status()
+      .status(400)
       .json({ message: "could't send the forgot password link", data: error });
   }
 };

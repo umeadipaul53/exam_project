@@ -43,7 +43,9 @@ router.route("/verify-two-factor-authentication").post(verifyTwoFA);
 router.route("/resend-otp").post(resendOTP);
 
 //student account routes
-router.route("/user").get(authenticateToken, authorizeRoles("user"), Student);
+router
+  .route("/user")
+  .get(authenticateToken, authorizeRoles("user", "admin"), Student);
 router.route("/refresh-token").post(refreshToken);
 router
   .route("/enable-two-factor")
