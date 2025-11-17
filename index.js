@@ -10,6 +10,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 const isProduction = process.env.NODE_ENV === "production";
+
 const frontendURL = isProduction
   ? "https://exam-project-frontend.vercel.app"
   : "http://localhost:5173";

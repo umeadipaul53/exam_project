@@ -4,6 +4,7 @@ const profilePage = async (req, res) => {
   try {
     const userId = req.query.id;
     const student = await studentModel.findById(userId);
+
     res.json({
       id: student._id,
       email: student.email,

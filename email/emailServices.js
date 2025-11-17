@@ -1,21 +1,14 @@
 const fs = require("fs");
 const path = require("path");
-const nodemailer = require("nodemailer");
+const { Resend } = require("resend");
 const handlebars = require("handlebars");
 const mjmlModule = require("mjml");
 
 // Safe fallback for mjml in case it's wrapped in a `.default`
 const mjml = typeof mjmlModule === "function" ? mjmlModule : mjmlModule.default;
 
-const transporter = nodemailer.createTransport({
-  host: "premium29.web-hosting.com",
-  port: 465, // or 587 depending on the provider
-  secure: true, // true for 465, false for 587 usually
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-});
+//initialise resend with your api key
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 async function sendEmail({ to, subject, templateName, variables }) {
   try {
@@ -36,22 +29,22 @@ async function sendEmail({ to, subject, templateName, variables }) {
 
     const { html, errors } = mjml(mjmlCompiled);
 
-    if (errors.length > 0) {
+    if (errors && errors.length > 0) {
       throw new Error("MJML compilation error: " + JSON.stringify(errors));
     }
 
-    const mailOptions = {
-      from: process.env.EMAIL_USER,
+    //send email using Resend
+    const response = await resend.emails.send({
+      from: "Exam-Project <noreply@examsproject.softcodemicrosystem.com>",
       to,
       subject,
       html,
-    };
+    });
 
-    await transporter.sendMail(mailOptions);
-
-    return true; // ✅ Add this line to return success
+    console.log("Email sent via Resend:", response);
+    return response;
   } catch (error) {
-    console.error("Failed to send email:", error.message);
+    console.error("Failed to send email via Resend:", error.message);
     return false; // ✅ Add this to indicate failure
   }
 }
