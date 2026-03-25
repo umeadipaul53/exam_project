@@ -16,7 +16,7 @@ async function sendEmail({ to, subject, templateName, variables }) {
       __dirname,
       "..",
       "templates",
-      `${templateName}.mjml`
+      `${templateName}.mjml`,
     );
 
     const mjmlRaw = fs.readFileSync(templatePath, "utf-8");
@@ -35,7 +35,7 @@ async function sendEmail({ to, subject, templateName, variables }) {
 
     //send email using Resend
     const response = await resend.emails.send({
-      from: "Exam-Project <noreply@examsproject.softcodemicrosystem.com>",
+      from: "onboarding@resend.dev",
       to,
       subject,
       html,

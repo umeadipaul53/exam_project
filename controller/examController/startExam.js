@@ -42,6 +42,7 @@ const startExam = async (req, res) => {
     };
 
     const numberQuestions = await questionModel.find(filter);
+
     const max = numberQuestions.reduce((sum, ans) => sum + (ans.marks || 0), 0);
 
     try {
