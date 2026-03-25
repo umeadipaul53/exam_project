@@ -35,7 +35,7 @@ async function sendEmail({ to, subject, templateName, variables }) {
 
     //send email using Resend
     const response = await resend.emails.send({
-      from: "onboarding@resend.dev",
+      from: "Exam-Project <noreply@softcodemicrosystem.com>",
       to,
       subject,
       html,

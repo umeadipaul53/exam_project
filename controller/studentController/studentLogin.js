@@ -47,7 +47,7 @@ const loginStudent = async (req, res) => {
 
     const twoFactorCode = String(Math.floor(Math.random() * 1000000)).padStart(
       6,
-      "0"
+      "0",
     );
 
     if (account.twofactor === false) {
@@ -72,7 +72,8 @@ const loginStudent = async (req, res) => {
       res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
         secure: isProduction, // true in production (HTTPS only)
-        sameSite: isProduction ? "None" : "Lax", // "None" for cross-site, "Lax" for local dev
+        sameSite: isProduction ? "None" : "Lax",
+        Partitioned: isProduction ? true : false, // REQUIRED
         path: "/student",
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       });

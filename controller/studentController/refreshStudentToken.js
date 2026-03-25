@@ -55,7 +55,8 @@ const refreshToken = async (req, res) => {
     res.cookie("refreshToken", newRefreshToken, {
       httpOnly: true,
       secure: isProduction,
-      sameSite: isProduction ? "None" : "Lax", // "None" for cross-site, "Lax" for local dev
+      sameSite: isProduction ? "None" : "Lax",
+      Partitioned: isProduction ? true : false, // REQUIRED
       path: "/student",
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
